@@ -10,10 +10,18 @@ import (
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
+	"github.com/TIBCOSoftware/flogo-lib/core/data"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
 )
 
 var log = logger.GetLogger("activity-tibco-azureblob")
+
+const (
+	AZURE_STORAGE_ACCOUNT    = "azure_storage_account"
+	AZURE_STORAGE_ACCESS_KEY = "azure_storage_access_key"
+	Method                   = "method"
+	ContainerName            = "container_name"
+)
 
 // AWSSNS Structure for the AWSNS activity
 type AZBLOB struct {
@@ -54,6 +62,12 @@ func handleErrors(err error, log logger.Logger) error {
 }
 
 func (a *AZBLOB) Eval(ctx activity.Context) (done bool, err error) {
+
+	a.settings, err = getSettings(ctx)
+
+	if err != nil {
+		return true, err
+	}
 
 	accountName, accountKey := a.settings.AZURE_STORAGE_ACCOUNT, a.settings.AZURE_STORAGE_ACCESS_KEY
 
@@ -140,4 +154,57 @@ func (a *AZBLOB) Eval(ctx activity.Context) (done bool, err error) {
 
 	}
 	return true, nil
+}
+
+func getSettings(ctx activity.Context) (Settings, error) {
+	settings := Settings{}
+
+	saccount, exists := ctx.GetSetting(AZURE_STORAGE_ACCOUNT)
+	if exists {
+		val, err := data.CoerceToString(saccount)
+		if err == nil {
+			settings.AZURE_STORAGE_ACCOUNT = val
+		} else {
+			return settings, err
+		}
+
+	} else {
+		return settings, errors.New("Error in getting Azure Storage Account settings")
+	}
+
+	skey, exists := ctx.GetSetting(AZURE_STORAGE_ACCESS_KEY)
+	if exists {
+		val, err := data.CoerceToString(skey)
+		if err == nil {
+			settings.AZURE_STORAGE_ACCESS_KEY = val
+		} else {
+			return settings, err
+		}
+	} else {
+		return settings, errors.New("Error in getting Azure Storage Account Key settings")
+	}
+
+	smethod, exists := ctx.GetSetting(Method)
+	if exists {
+		val, err := data.CoerceToString(smethod)
+		if err == nil {
+			settings.Method = val
+		} else {
+			return settings, err
+		}
+	} else {
+		return settings, errors.New("Error in getting Method settings")
+	}
+	scontain, exists := ctx.GetSetting(ContainerName)
+	if exists {
+		val, err := data.CoerceToString(scontain)
+		if err == nil {
+			settings.ContainerName = val
+		} else {
+			return settings, err
+		}
+	} else {
+		return settings, errors.New("Error in getting Container Name settings")
+	}
+	return settings, nil
 }
