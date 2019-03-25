@@ -5,6 +5,7 @@ import (
 
 	"io/ioutil"
 
+	"github.com/TIBCOSoftware/flogo-contrib/action/flow/test"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 )
 
@@ -33,4 +34,25 @@ func TestCreate(t *testing.T) {
 		t.Fail()
 		return
 	}
+}
+
+func TestRun(t *testing.T) {
+	act := NewActivity(getActivityMetadata())
+	tc := test.NewTestActivityContext(getActivityMetadata())
+
+	tc.SetSetting(AZURE_STORAGE_ACCOUNT, "flogo")
+	tc.SetSetting(AZURE_STORAGE_ACCESS_KEY, "S2qwvITB90IMClvEyeYplYRRKn5y6+tclJtVTBKPkTSQkGgBzawpmYGSFXJY3tlhnJhiihHXsEPH0Xfy6wOrFw==")
+	tc.SetSetting(Method, "upload")
+	tc.SetSetting(ContainerName, "sample")
+
+	tc.SetInput("file", "abc.txt")
+	tc.SetInput("data", 2)
+
+	done, _ := act.Eval(tc)
+
+	if !done {
+		t.Error("activity should be done")
+		return
+	}
+
 }

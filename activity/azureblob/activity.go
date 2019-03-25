@@ -38,7 +38,7 @@ type Settings struct {
 
 // NewActivity creates a new activity
 func NewActivity(metadata *activity.Metadata) activity.Activity {
-	return &AZBLOB{metadata: metadata}
+	return &AZBLOB{metadata: metadata, log: log}
 }
 
 // Metadata implements activity.Activity.Metadata
