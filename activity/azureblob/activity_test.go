@@ -41,7 +41,7 @@ func TestRun(t *testing.T) {
 	tc := test.NewTestActivityContext(getActivityMetadata())
 
 	tc.SetSetting(AZURE_STORAGE_ACCOUNT, "flogo")
-	tc.SetSetting(AZURE_STORAGE_ACCESS_KEY, "S2qwvITB90IMClvEyeYplYRRKn5y6+tclJtVTBKPkTSQkGgBzawpmYGSFXJY3tlhnJhiihHXsEPH0Xfy6wOrFw==")
+	tc.SetSetting(AZURE_STORAGE_ACCESS_KEY, "")
 	tc.SetSetting(Method, "upload")
 	tc.SetSetting(ContainerName, "sample")
 
