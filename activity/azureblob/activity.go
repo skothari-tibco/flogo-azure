@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
@@ -97,13 +98,17 @@ func (a *AZBLOB) Eval(ctx activity.Context) (done bool, err error) {
 
 		// This example uses a never-expiring context
 		_, err = containerURL.Create(bctx, azblob.Metadata{}, azblob.PublicAccessNone)
-		if err != nil {
-			return true, err
-		}
+
 		err = handleErrors(err, a.log)
 
 		if err != nil {
-			return true, err
+
+			if !strings.Contains(err.Error(), "409") {
+
+				return true, err
+			}
+
+			a.log.Info("Container exists...\n")
 		}
 		a.log.Info("Creating a dummy file to test the upload and download\n")
 		err = ioutil.WriteFile(inputFile, []byte(inputData), 0700)
